@@ -8,6 +8,8 @@
 
 #import "IBCViewController.h"
 
+#define UUID @"e2c56db5-dffb-48d2-b060-d0f5a71096e0"
+
 @interface IBCViewController ()
 @property(nonatomic, strong)CLLocationManager* locationManager;
 @property(nonatomic, strong)CLBeaconRegion* beaconRegion;
@@ -48,13 +50,13 @@
         self.locationManager = [CLLocationManager new];
         self.locationManager.delegate = self;
         
-        self.proximityUUID = [[NSUUID alloc] initWithUUIDString:@"e2c56db5-dffb-48d2-b060-d0f5a71096e0"];
+        self.proximityUUID = [[NSUUID alloc] initWithUUIDString:UUID];
         self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:self.proximityUUID
                                                                 identifier:@"jp.classmethod.testregion"];
         [self.locationManager startMonitoringForRegion:self.beaconRegion];
     }
     
-    [self SettingVoice];
+    [self settingVoice];
     
     isInRegion = false;
     isFirstEnterNear = false;
@@ -64,16 +66,21 @@
     messageLbl.text = @"(- ω -)\n帰宅中・・・";
 }
 
-- (void)SettingVoice{
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - setting method
+
+- (void)settingVoice{
     NSString *soundFilePath =
     [[NSBundle mainBundle] pathForResource: @"oka"
                                     ofType: @"wav"];
     
-    NSURL *fileURL =
-    [[NSURL alloc] initFileURLWithPath: soundFilePath];
-    
     AVAudioPlayer *newPlayer =
-    [[AVAudioPlayer alloc] initWithContentsOfURL: fileURL
+    [[AVAudioPlayer alloc] initWithContentsOfURL: [[NSURL alloc] initFileURLWithPath: soundFilePath]
                                            error: nil];
     okaeriVoice = newPlayer;
     [okaeriVoice prepareToPlay];
@@ -81,17 +88,15 @@
     soundFilePath =
     [[NSBundle mainBundle] pathForResource: @"itte"
                                     ofType: @"wav"];
-     fileURL =
-    [[NSURL alloc] initFileURLWithPath: soundFilePath];
-    
      newPlayer =
-    [[AVAudioPlayer alloc] initWithContentsOfURL: fileURL
+    [[AVAudioPlayer alloc] initWithContentsOfURL: [[NSURL alloc] initFileURLWithPath: soundFilePath]
                                            error: nil];
     itteVoice = newPlayer;
     [itteVoice prepareToPlay];
 
 }
 
+#pragma mark - locationManager delegate
 - (void)locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
 {
     [self.locationManager requestStateForRegion:self.beaconRegion];
@@ -186,7 +191,9 @@
 }
 
 
+#pragma mark - additional method
 
+// ローカルプッシュ用 - test
 -(void)sendLocalNotificationForMessage:(NSString*)str isImmidiate:(CLProximity)proximatery{
     
     if(proximatery == CLProximityNear || proximatery == CLProximityImmediate || proximatery == CLProximityFar){
@@ -222,11 +229,6 @@
     return rangeMessage;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 - (BOOL)compareWithInTime{
     

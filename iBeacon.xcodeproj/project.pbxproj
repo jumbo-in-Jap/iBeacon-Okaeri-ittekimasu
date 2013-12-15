@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8C16B9B2185DB13400A5B3C4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C16B9B1185DB13400A5B3C4 /* AVFoundation.framework */; };
-		8C16B9B5185DB2AC00A5B3C4 /* okaeri.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8C16B9B4185DB2AC00A5B3C4 /* okaeri.wav */; };
 		8C16B9BC185DBEAC00A5B3C4 /* itte.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8C16B9BA185DBEAC00A5B3C4 /* itte.wav */; };
 		8C16B9BD185DBEAC00A5B3C4 /* oka.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8C16B9BB185DBEAC00A5B3C4 /* oka.wav */; };
 		8CAF5A7A184B073400FC1227 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CAF5A79184B073400FC1227 /* Foundation.framework */; };
@@ -43,7 +42,6 @@
 
 /* Begin PBXFileReference section */
 		8C16B9B1185DB13400A5B3C4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		8C16B9B4185DB2AC00A5B3C4 /* okaeri.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = okaeri.wav; path = sound/okaeri.wav; sourceTree = "<group>"; };
 		8C16B9BA185DBEAC00A5B3C4 /* itte.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = itte.wav; path = sound/itte.wav; sourceTree = "<group>"; };
 		8C16B9BB185DBEAC00A5B3C4 /* oka.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = oka.wav; path = sound/oka.wav; sourceTree = "<group>"; };
 		8CAF5A76184B073400FC1227 /* iBeacon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iBeacon.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,7 +103,6 @@
 			children = (
 				8C16B9BA185DBEAC00A5B3C4 /* itte.wav */,
 				8C16B9BB185DBEAC00A5B3C4 /* oka.wav */,
-				8C16B9B4185DB2AC00A5B3C4 /* okaeri.wav */,
 			);
 			name = sound;
 			sourceTree = "<group>";
@@ -271,7 +268,6 @@
 				8C16B9BD185DBEAC00A5B3C4 /* oka.wav in Resources */,
 				8C16B9BC185DBEAC00A5B3C4 /* itte.wav in Resources */,
 				8CAF5A92184B073400FC1227 /* Images.xcassets in Resources */,
-				8C16B9B5185DB2AC00A5B3C4 /* okaeri.wav in Resources */,
 				8CAF5A84184B073400FC1227 /* InfoPlist.strings in Resources */,
 				8CAF5A8D184B073400FC1227 /* Main.storyboard in Resources */,
 			);
