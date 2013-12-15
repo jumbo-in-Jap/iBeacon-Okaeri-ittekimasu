@@ -18,6 +18,7 @@
 @property(nonatomic)BOOL isInRegion;
 @property(nonatomic)BOOL isOutRegion;
 @property(nonatomic)BOOL isFirstEnterNear;
+@property(nonatomic)BOOL isFirstOutNear;
 
 @property(nonatomic, strong)NSDate* inTime;
 
@@ -33,6 +34,7 @@
 @synthesize isInRegion;
 @synthesize isFirstEnterNear;
 @synthesize isOutRegion;
+@synthesize isFirstOutNear;
 
 
 @synthesize inTime;
@@ -43,25 +45,20 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     if ([CLLocationManager isMonitoringAvailableForClass:[CLBeaconRegion class]]) {
-        // CLLocationManagerの生成とデリゲートの設定
         self.locationManager = [CLLocationManager new];
         self.locationManager.delegate = self;
         
-        // 生成したUUIDからNSUUIDを作成
-        //self.proximityUUID = [[NSUUID alloc] initWithUUIDString:@"80D8FFC4-9807-407C-8C4D-F7AF9248B027"];
         self.proximityUUID = [[NSUUID alloc] initWithUUIDString:@"e2c56db5-dffb-48d2-b060-d0f5a71096e0"];
-        // CLBeaconRegionを作成
         self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:self.proximityUUID
                                                                 identifier:@"jp.classmethod.testregion"];
-        // Beaconによる領域観測を開始
         [self.locationManager startMonitoringForRegion:self.beaconRegion];
-        //NSLog(@"%@", [IBCCommon getConnectionStatus]);
     }
     
     [self SettingVoice];
     
     isInRegion = false;
     isFirstEnterNear = false;
+    isFirstOutNear = false;
     isOutRegion = false;
     
     messageLbl.text = @"(- ω -)\n帰宅中・・・";
@@ -126,7 +123,6 @@
     //[self sendLocalNotificationForMessage:@"Enter Region" isImmidiate:nil];
     isInRegion = true;
     
-    // Beaconの距離測定を開始する
     if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
         [self.locationManager startRangingBeaconsInRegion:(CLBeaconRegion *)region];
     }
@@ -138,13 +134,11 @@
     // ローカル通知
     //[self sendLocalNotificationForMessage:@"Exit Region" isImmidiate:nil];
     
-    // 出たかどうか
     if(isInRegion || [self compareWithInTime]){
         [itteVoice play];
         isInRegion = false;
     }
     
-    // Beaconの距離測定を終了する
     if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
         [self.locationManager stopRangingBeaconsInRegion:(CLBeaconRegion *)region];
     }
@@ -155,21 +149,18 @@
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
 {
     if (beacons.count > 0) {
-        // 最も距離の近いBeaconについて処理する
         CLBeacon *nearestBeacon = beacons.firstObject;
         
         NSString *rangeMessage;
         rangeMessage = [self proxiMessage:nearestBeacon.proximity];
         
-        // 取得したビーコンとの情報
         NSString *message = [NSString stringWithFormat:@"major:%@ \n minor:%@ \n accuracy:%f \n rssi:%d \n status:%@ \n",
                              nearestBeacon.major, nearestBeacon.minor, nearestBeacon.accuracy,
                              (int)nearestBeacon.rssi, [self proxiMessage:nearestBeacon.proximity]];
         
-        NSLog(@"%@", message);
         statusLbl.text = message;
         
-        // 最初にNEar
+        // 最初にNearになったとき「おかえり」
         if(((nearestBeacon.proximity == CLProximityNear) ||
            (nearestBeacon.proximity == CLProximityImmediate)) && !isFirstEnterNear){
             messageLbl.text = @"(o´･ω･`o)ﾉ\nおかえり！！";
@@ -180,7 +171,7 @@
             kitakuTimeLbl.text = [NSString stringWithFormat:@"%@", inTime];
         }
         
-        // unknownでいてらっしゃい
+        // unknownで「いてらっしゃい」
         if(isInRegion && [self compareWithInTime] &&
            ((nearestBeacon.proximity == CLProximityUnknown) && !isFirstOutNear)){
             [itteVoice play];
@@ -199,22 +190,14 @@
 -(void)sendLocalNotificationForMessage:(NSString*)str isImmidiate:(CLProximity)proximatery{
     
     if(proximatery == CLProximityNear || proximatery == CLProximityImmediate || proximatery == CLProximityFar){
-    // ローカル通知を作成する
     UILocalNotification *notification = [[UILocalNotification alloc] init];
 
-    // 通知日時を設定する。今から10秒後
     NSDate *date = [NSDate dateWithTimeIntervalSinceNow:0];
     [notification setFireDate:date];
-    
-    // タイムゾーンを指定する
     [notification setTimeZone:[NSTimeZone localTimeZone]];
-    // メッセージを設定する
     [notification setAlertBody:[self proxiMessage:proximatery]];
-    // 効果音は標準の効果音を利用する
     [notification setSoundName:UILocalNotificationDefaultSoundName];
-    // ボタンの設定
     [notification setAlertAction:@"Open"];
-    // ローカル通知を登録する
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     }
 }
@@ -222,19 +205,18 @@
 -(NSString*)proxiMessage:(CLProximity)proximatery{
 
     NSString* rangeMessage ;
-    // Beacon の距離でメッセージを変える
     switch (proximatery) {
         case CLProximityImmediate:
-            rangeMessage = @"Range Immediate: ";
+            rangeMessage = @"Range Immediate ";
             break;
         case CLProximityNear:
-            rangeMessage = @"Range Near: ";
+            rangeMessage = @"Range Near ";
             break;
         case CLProximityFar:
-            rangeMessage = @"Range Far: ";
+            rangeMessage = @"Range Far ";
             break;
         default:
-            rangeMessage = @"Range Unknown: ";
+            rangeMessage = @"Range Unknown ";
             break;
     }
     return rangeMessage;
@@ -251,7 +233,7 @@
     if(!inTime)return false;
     
     NSDate *now = [NSDate date];
-    float tmp= [now timeIntervalSinceDate:inTime]; //差分をfloatで取得
+    float tmp= [now timeIntervalSinceDate:inTime];
     int hh = (int)(tmp / 3600);
     int mm = (int)((tmp-hh) / 60);
     float ss = tmp -(float)(hh*3600+mm*60);
