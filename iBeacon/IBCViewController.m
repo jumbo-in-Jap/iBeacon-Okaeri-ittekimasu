@@ -8,7 +8,7 @@
 
 #import "IBCViewController.h"
 
-#define UUID @"e2c56db5-dffb-48d2-b060-d0f5a71096e0"
+#define UUID @"your app UUID"
 
 @interface IBCViewController ()
 @property(nonatomic, strong)CLLocationManager* locationManager;
